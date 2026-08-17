@@ -131,10 +131,12 @@ locally before wiring up Firebase.
 
 ## Storage layout
 
-APKs are written to the disk named by `APK_DISK` (default `local`):
+APKs are written to the disk named by `APK_DISK` (default `local`) at the
+disk-relative path `apks/{app_id}/{version_code}.apk`. Laravel's `local` disk is
+rooted at `storage/app/private`, so on disk that resolves to:
 
 ```
-storage/app/apks/{app_id}/{version_code}.apk
+storage/app/private/apks/{app_id}/{version_code}.apk
 ```
 
 Nothing is ever placed under `public/`, and there is no symlink into the APK
