@@ -331,5 +331,3 @@ Firebase credentials or MySQL instance is needed to run them.
   among that app's **active** versions.
 - `devices.is_active` and `app_versions.is_active` soft-retire rows without losing
   history; nothing in this app hard-deletes a device or a version.
-#   a p p - s t o r e - z i r o o n e  
- 

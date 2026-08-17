@@ -1,0 +1,42 @@
+name: Deploy App Store Management
+
+on:
+  push:
+    branches:
+      - deploy
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy via SSH (git pull)
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT != '' && secrets.SSH_PORT || '22' }}
+          script: |
+            set -e
+            cd "${{ secrets.DEPLOY_PATH }}"
+
+            git fetch origin deploy
+            git reset --hard origin/deploy
+
+            export COMPOSER_ALLOW_SUPERUSER=1
+            composer install \
+              --no-dev \
+              --optimize-autoloader \
+              --no-interaction \
+              --ignore-platform-reqs
+
+            chmod -R ug+rwX storage bootstrap/cache || true
+            chown -R ziroone-play:ziroone-play storage bootstrap/cache || true
+            php artisan storage:link || true
+            php artisan optimize:clear || true
+            php artisan config:cache || true
+            php artisan route:cache || true
+            php artisan view:cache || true
+
+            echo "app-store-management.deploy completed"
