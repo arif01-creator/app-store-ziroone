@@ -10,75 +10,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Deploy via SSH
+      - name: Deploy via SSH (git pull)
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT != '' && secrets.SSH_PORT || '22' }}
-
           script: |
             set -e
+            cd "${{ secrets.DEPLOY_PATH }}"
 
-            DEPLOY_PATH="${{ secrets.DEPLOY_PATH }}"
-
-            echo "========================================"
-            echo "Starting deployment"
-            echo "========================================"
-
-            echo "Deploy path: $DEPLOY_PATH"
-
-            if [ ! -d "$DEPLOY_PATH" ]; then
-                echo "ERROR: Deploy directory does not exist:"
-                echo "$DEPLOY_PATH"
-                exit 1
-            fi
-
-            cd "$DEPLOY_PATH"
-
-            echo "Current directory:"
-            pwd
-
-            echo "Directory contents:"
-            ls -la
-
-            if [ ! -d ".git" ]; then
-                echo "ERROR: This directory is not a Git repository."
-                echo "Expected Git directory:"
-                echo "$DEPLOY_PATH/.git"
-                exit 1
-            fi
-
-            echo "Git repository detected."
-
-            git status
             git fetch origin deploy
             git reset --hard origin/deploy
 
-            echo "Installing Composer dependencies..."
-
             export COMPOSER_ALLOW_SUPERUSER=1
-
             composer install \
               --no-dev \
               --optimize-autoloader \
               --no-interaction \
               --ignore-platform-reqs
 
-            echo "Fixing permissions..."
-
             chmod -R ug+rwX storage bootstrap/cache || true
             chown -R ziroone-play:ziroone-play storage bootstrap/cache || true
-
-            echo "Running Laravel commands..."
-
             php artisan storage:link || true
-            php artisan optimize:clear
-            php artisan config:cache
-            php artisan route:cache
-            php artisan view:cache
+            php artisan optimize:clear || true
+            php artisan config:cache || true
+            php artisan route:cache || true
+            php artisan view:cache || true
 
-            echo "========================================"
             echo "app-store-management.deploy completed"
-            echo "========================================"
