@@ -84,4 +84,28 @@ class PublicDownloadPageTest extends TestCase
     {
         $this->get('/apps/nope/download')->assertNotFound();
     }
+
+    public function test_it_offers_a_qr_code_pointing_back_at_this_page(): void
+    {
+        $app = App::factory()->create(['slug' => 'ziroone-crm']);
+        AppVersion::factory()->for($app)->create(['version_code' => 2]);
+
+        // The code is only useful to someone reading the page on a desktop, so
+        // it is hidden below md — but it must still be in the markup, and it
+        // must encode this page rather than the APK route (which is a POST).
+        $this->get('/apps/ziroone-crm/download')
+            ->assertOk()
+            ->assertSee('Installing on a phone?')
+            ->assertSee('hidden pc:block', false)
+            ->assertSee('<svg', false);
+    }
+
+    public function test_the_qr_code_is_absent_until_a_build_exists(): void
+    {
+        App::factory()->create(['slug' => 'ziroone-crm']);
+
+        $this->get('/apps/ziroone-crm/download')
+            ->assertOk()
+            ->assertDontSee('Installing on a phone?');
+    }
 }

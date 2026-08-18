@@ -21,6 +21,15 @@ jobs:
             set -e
             cd "${{ secrets.DEPLOY_PATH }}"
 
+            # Checked before anything is touched. The asset build below is not
+            # optional — failing it after `git reset --hard` would leave the
+            # server on new PHP with stale CSS, which is worse than not
+            # deploying at all.
+            if ! command -v npm >/dev/null 2>&1; then
+              echo "npm not found on this server. Install Node 20+ (nvm or the distro package) — the front-end assets cannot be built without it." >&2
+              exit 1
+            fi
+
             git fetch origin deploy
             git reset --hard origin/deploy
 
@@ -30,6 +39,20 @@ jobs:
               --optimize-autoloader \
               --no-interaction \
               --ignore-platform-reqs
+
+            # Front-end assets.
+            #
+            # Tailwind only emits CSS for the utility classes it can actually
+            # find in the Blade templates, so any template introducing a new one
+            # needs a rebuild or the class silently does nothing in the browser.
+            # public/build is gitignored, so the git reset above cannot carry it
+            # and this is the only thing keeping the CSS in step with the markup.
+            #
+            # --include=dev because vite and tailwind are devDependencies, and a
+            # server with NODE_ENV=production would otherwise skip them and fail
+            # the build.
+            npm ci --include=dev --no-audit --no-fund
+            npm run build
 
             chmod -R ug+rwX storage bootstrap/cache || true
             chown -R ziroone-play:ziroone-play storage bootstrap/cache || true

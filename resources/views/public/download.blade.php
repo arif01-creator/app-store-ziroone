@@ -1,3 +1,10 @@
+@php
+    use SimpleSoftwareIO\QrCode\Facades\QrCode;
+
+    // Built from the live request rather than APP_URL, so the QR keeps working
+    // whichever hostname is actually fronting the site.
+    $publicUrl = route('public.apps.show', $app);
+@endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
@@ -63,6 +70,28 @@
                         <p class="mt-3 text-center text-xs text-gray-500">
                             {{ __('Android only. You may need to allow installs from this browser.') }}
                         </p>
+
+                        {{--
+                            Desktop only. Someone already reading this on a phone is
+                            where the code would send them; the case worth solving is
+                            the link being opened on a PC, where the button above
+                            lands the APK on a machine that cannot install it.
+                        --}}
+                        <div class="mt-6 hidden pc:block rounded-xl border border-gray-200 bg-gray-50 p-4">
+                            <div class="flex items-center gap-4">
+                                <div class="shrink-0 rounded-lg border border-gray-200 bg-white p-2">
+                                    {!! QrCode::size(120)->margin(0)->generate($publicUrl) !!}
+                                </div>
+                                <div class="min-w-0">
+                                    <h2 class="text-sm font-semibold text-gray-900">
+                                        {{ __('Installing on a phone?') }}
+                                    </h2>
+                                    <p class="mt-1 text-xs text-gray-600 leading-relaxed">
+                                        {{ __('Scan this code with your phone camera to open this page there, then tap Download APK.') }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     @if ($version->release_notes)
