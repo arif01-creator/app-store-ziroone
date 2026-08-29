@@ -11,7 +11,8 @@
     <!-- Logo -->
     <div class="h-16 flex items-center px-6 border-b border-gray-800">
         <a href="{{ route('dashboard') }}" class="flex items-center gap-2.5">
-            <x-application-logo class="h-8 w-auto fill-current text-white" />
+            <img src="{{ asset('ziroone_play.png') }}" alt="Logo" class="w-10 h-10 fill-current text-gray-500" />
+            {{-- <x-application-logo class="h-8 w-auto fill-current text-white" /> --}}
             <span class="text-white font-semibold text-sm leading-tight">{{ config('app.name') }}</span>
         </a>
     </div>

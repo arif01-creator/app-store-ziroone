@@ -15,17 +15,30 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased">
+        <div id="site-loader" aria-live="polite" aria-label="Loading page">
+            <div class="flex flex-col items-center gap-3">
+                <img src="{{ asset('ziroone_play.png') }}" alt="Loading logo" class="w-20 h-20" />
+                <div class="loader-bar">
+                    <span class="loader-progress"></span>
+                </div>
+            </div>
+        </div>
+
         <div x-data="{ sidebarOpen: false }" class="min-h-screen bg-gray-100">
             @include('layouts.navigation')
 
             <!-- Mobile top bar -->
             <div class="lg:hidden sticky top-0 z-30 flex items-center gap-3 bg-white border-b border-gray-200 px-4 h-14">
-                <button @click="sidebarOpen = true" class="p-2 -ms-2 rounded-md text-gray-500 hover:bg-gray-100">
+                {{-- <button @click="sidebarOpen = true" class="p-2 -ms-2 rounded-md text-gray-500 hover:bg-gray-100">
                     <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                     </svg>
                 </button>
-                <span class="font-semibold text-gray-800">{{ config('app.name') }}</span>
+                <span class="font-semibold text-gray-800">{{ config('app.name') }}</span> --}}
+                <a href="/">
+                    <img src="{{ asset('ziroone_play.png') }}" alt="Logo" class="w-10 h-10 fill-current text-gray-500" />
+                    {{-- <x-application-logo class="w-10 h-10 fill-current text-gray-500" /> --}}
+                </a>
             </div>
 
             <div class="lg:ps-64">

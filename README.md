@@ -155,6 +155,17 @@ the public download page and are not secret.
 
 ---
 
+## Integrating a new Flutter client app
+
+Three apps already integrate with this server (Collector 2.0, Member Passbook,
+Dhaka Western Valley Customer Portal) — same file layout under
+`lib/core/update/`, same server contract, same update-overlay UX, each adapted
+to that app's own state management. To wire up another one, see
+[`docs/CLIENT_APP_INTEGRATION_PROMPT.md`](docs/CLIENT_APP_INTEGRATION_PROMPT.md)
+for a ready-to-paste prompt that reproduces the pattern.
+
+---
+
 ## Admin panel
 
 | Route | Purpose |
